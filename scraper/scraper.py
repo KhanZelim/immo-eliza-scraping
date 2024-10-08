@@ -28,14 +28,17 @@ url = apartment_links[0]
 listing = driver.get(url)
 
 driver.implicitly_wait(5)
-listing_data = {}
+"""listing_data = {}
 listing_data_keys = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "classified-table__header")))
 listing_data_values = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "classified-table__data")))
 for key, value in zip(listing_data_keys, listing_data_values):
     key_text = key.text
     value_text = value.text
     listing_data[key_text] = value_text
+print(listing_data)"""
+
+listing_data = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "classified")))
 print(listing_data)
 
-df = pd.DataFrame(listing_data)
-df.to_csv("data.csv", index=True)
+#df = pd.DataFrame(list(listing_data.items()), columns=['Key', 'Value'])
+#df.to_csv("data.csv", index=True)
