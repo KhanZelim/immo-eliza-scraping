@@ -20,7 +20,7 @@ for sitemap in sitemaps:
 
 driver.close()
 
-download_folder = "data\raw_links"
+download_folder = "data/raw_links"
 
 for link in classified_links:
     filename = link.split("/")[-1]
