@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
+import json
 
 driver = webdriver.Firefox()
 driver.implicitly_wait(5)
@@ -24,21 +25,24 @@ for apartment in apartments:
     apartment_links.append(apartment.get_attribute("href"))
 print(apartment_links)
 
-url = apartment_links[0]
+url = "https://www.immoweb.be/en/classified/house/for-sale/loppem/8210/6956904" # apartment_links[0]
 listing = driver.get(url)
 
 driver.implicitly_wait(5)
-"""listing_data = {}
+listing_data = {}
 listing_data_keys = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "classified-table__header")))
 listing_data_values = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "classified-table__data")))
 for key, value in zip(listing_data_keys, listing_data_values):
     key_text = key.text
     value_text = value.text
     listing_data[key_text] = value_text
-print(listing_data)"""
-
-listing_data = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "classified")))
 print(listing_data)
 
-#df = pd.DataFrame(list(listing_data.items()), columns=['Key', 'Value'])
-#df.to_csv("data.csv", index=True)
+df = pd.DataFrame(list(listing_data.items()), columns=['Key', 'Value'])
+df.to_csv("data.csv", index=True)
+
+"""classified_data = driver.execute_script("return window.classified;")
+print(classified_data)
+
+with open("classified_data.json", "w") as json_file:
+    json.dump(classified_data, json_file, indent=4)"""
