@@ -1,5 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import requests
+import os
 
 sitemap_url = "https://www.immoweb.be/sitemap.xml"
 
@@ -15,6 +17,17 @@ for sitemap in sitemaps:
     loc = sitemap.text
     if "classifieds" in loc:
         classified_links.append(loc)
-        
+
+driver.close()
+
+download_folder = "data\raw_links"
+
 for link in classified_links:
-    print(link)
+    filename = link.split("/")[-1]
+
+    file_path = os.path.join(download_folder, filename)
+
+    response = requests.get(link)
+
+    with open(file_path, "wb") as file:
+        file.write(response.content)
