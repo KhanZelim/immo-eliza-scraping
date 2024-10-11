@@ -71,7 +71,6 @@ class ImmowebScraper:
                 filtered_links.write("\n")
 
     def get_data(self, url: str):
-        url = "https://www.immoweb.be/en/classified/house/for-sale/wondelgem/9032/20211172"
         listing_data = {}
         self.driver.get(url)
 
