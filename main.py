@@ -1,11 +1,22 @@
 from scraper.scraper import ImmowebScraper
+import asyncio
+import os
 
-scraper = ImmowebScraper()
+async def main():
+    scraper = ImmowebScraper()
 
-scraper.get_links()
-scraper.download_links_async()
-scraper.filter_links()
+    await scraper.scrape_links_async()
 
-scraper.get_data()
-scraper.close_driver()
-scraper.save_to_csv()
+    for file in os.listdir("data/filtered_links"):
+        file_path = os.path.join("data/filtered_links", file)
+
+        with open(file_path, "r") as links_file:
+            links = links_file.readlines()
+
+        for link in links:
+            await scraper.get_data_async(link)
+            
+    await scraper.save_to_csv_async()
+    scraper.close_driver()
+
+asyncio.run(main())
