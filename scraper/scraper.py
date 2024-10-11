@@ -33,7 +33,7 @@ class ImmowebScraper:
             if "classifieds" in loc:
                 classifieds.append(loc)
 
-        self.driver.close()
+        self.close_driver()
 
         return classifieds
 
@@ -71,31 +71,37 @@ class ImmowebScraper:
                 filtered_links.write("\n")
 
     def get_data(self, url: str):
-        listing_data = {}
-        self.driver.get(url)
+        try:
+            listing_data = {}
+            self.driver.get(url)
 
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
-        classified_data = self.driver.execute_script("return window.classified;")
-        listing_data["property_id"] = classified_data["id"]
-        listing_data["locality"] = classified_data["property"]["location"]["locality"]
-        listing_data["postal_code"] = classified_data["property"]["location"]["postalCode"]
-        listing_data["price"] = classified_data["transaction"]["sale"].get("price", None)
-        listing_data["property_type"] = classified_data["property"].get("type", None)
-        listing_data["property_subtype"] = classified_data["property"].get("subtype", None)
-        listing_data["sale_type"] = classified_data["price"].get("type", None)
-        listing_data["number_of_rooms"] = classified_data["property"].get("bedroomCount", None)
-        listing_data["living_area"] = classified_data["property"]["livingRoom"].get("surface", None)
-        listing_data["equipped_kitchen"] = classified_data["property"]["kitchen"].get("type", None)
-        listing_data["furnished"] = 1 if classified_data["transaction"]["sale"]["isFurnished"] else 0
-        listing_data["open_fire"] = 1 if classified_data["property"]["fireplaceExists"] else 0
-        listing_data["terrace"] = classified_data["property"].get("terraceSurface", None)
-        listing_data["garden"] = classified_data["property"].get("gardenSurface", None)
-        listing_data["facades"] = classified_data["property"]["building"].get("facadeCount", None)
-        listing_data["swimming_pool"] = 1 if classified_data["property"]["hasSwimmingPool"] else 0
-        listing_data["state_of_building"] = classified_data["property"]["building"].get("condition", None)
+            classified_data = self.driver.execute_script("return window.classified;")
+            listing_data["property_id"] = classified_data["id"]
+            listing_data["locality"] = classified_data["property"]["location"]["locality"]
+            listing_data["postal_code"] = classified_data["property"]["location"]["postalCode"]
+            listing_data["price"] = classified_data["transaction"]["sale"].get("price", None)
+            listing_data["property_type"] = classified_data["property"].get("type", None)
+            listing_data["property_subtype"] = classified_data["property"].get("subtype", None)
+            listing_data["sale_type"] = classified_data["price"].get("type", None)
+            listing_data["number_of_rooms"] = classified_data["property"].get("bedroomCount", None)
+            listing_data["living_area"] = classified_data["property"]["livingRoom"].get("surface", None)
+            listing_data["equipped_kitchen"] = classified_data["property"]["kitchen"].get("type", None)
+            listing_data["furnished"] = 1 if classified_data["transaction"]["sale"]["isFurnished"] else 0
+            listing_data["open_fire"] = 1 if classified_data["property"]["fireplaceExists"] else 0
+            listing_data["terrace"] = classified_data["property"].get("terraceSurface", None)
+            listing_data["garden"] = classified_data["property"].get("gardenSurface", None)
+            listing_data["facades"] = classified_data["property"]["building"].get("facadeCount", None)
+            listing_data["swimming_pool"] = 1 if classified_data["property"]["hasSwimmingPool"] else 0
+            listing_data["state_of_building"] = classified_data["property"]["building"].get("condition", None)
 
-        self.listings.append(listing_data)
+            self.listings.append(listing_data)
+        except Exception as e:
+            print(f"Error occurred while fetchind data from {url}: {e}")
+
+    def close_driver(self):
+        self.driver.close()
 
     def save_to_csv(self):
         df = pd.DataFrame(self.listings)
