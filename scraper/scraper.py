@@ -112,7 +112,7 @@ class ImmowebScraper:
         df = pd.DataFrame(self.listings)
         df.to_csv("data.csv", index=False)
 
-    async def scrape_links_async(self)
+    async def scrape_links_async(self):
         async with AsyncClient as session:
             classifieds = self.get_links()
 
